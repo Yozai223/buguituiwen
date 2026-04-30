@@ -81,7 +81,6 @@
             margin-bottom: 12px;
             letter-spacing: 0.02em;
         }
-        /* 搜索栏样式 */
         .search-container {
             display: flex;
             justify-content: center;
@@ -133,7 +132,6 @@
             color: var(--accent-deep);
         }
 
-        /* 分页导航 */
         .pagination {
             display: flex;
             justify-content: center;
@@ -257,7 +255,6 @@
             color: var(--accent);
         }
 
-        /* 编辑模式专属样式 */
         .edit-mode .page-title {
             cursor: pointer;
             background: rgba(200, 165, 174, 0.03);
@@ -337,7 +334,6 @@
             color: var(--text-light);
         }
 
-        /* 导入提示 */
         .import-hint {
             text-align: center;
             margin-top: 24px;
@@ -351,7 +347,6 @@
             text-decoration: underline;
         }
 
-        /* 密码弹窗 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -397,6 +392,12 @@
             color: var(--text-muted);
             font-size: 1rem;
         }
+
+        .loading-text {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -406,7 +407,6 @@
             <p class="page-subtitle" id="pageSubtitle">耽美小说精选推荐 · 纯文字推文</p>
         </header>
 
-        <!-- 搜索栏 -->
         <div class="search-container">
             <div class="search-wrapper">
                 <input type="text" class="search-input" id="searchInput" placeholder="搜索书名、作者、标签...">
@@ -414,11 +414,12 @@
             </div>
         </div>
 
-        <div class="stats-bar" id="statsBar">共 <span id="cardCount">0</span> 篇推文</div>
+        <div class="stats-bar" id="statsBar">正在加载...</div>
 
-        <div class="cards-list" id="cardsList"></div>
+        <div class="cards-list" id="cardsList">
+            <div class="loading-text">📖 加载推文数据中...</div>
+        </div>
 
-        <!-- 分页导航 -->
         <div class="pagination" id="pagination">
             <button class="pagination-btn" id="prevPageBtn" disabled>← 上一页</button>
             <span class="pagination-info" id="pageInfo">第 1/1 页</span>
@@ -435,7 +436,6 @@
         <div class="import-hint" id="importHint">📥 导入推文数据</div>
     </div>
 
-    <!-- 密码弹窗 -->
     <div class="modal-overlay" id="passwordModal">
         <div class="modal-box">
             <p style="color:var(--accent-deep); font-weight:600;">🔐 管理员验证</p>
@@ -446,11 +446,14 @@
 
     <script>
         (function() {
-            const STORAGE_KEY = 'lotus_ouhe_edit_mode_v3';
+            // ==================== 配置 ====================
+            const DATA_URL = 'data.json';          // 仓库中 JSON 文件的路径
+            const STORAGE_KEY = 'lotus_ouhe_edit_mode_v4';
             const DEFAULT_PASSWORD = 'ouhe2026';
             const CARDS_PER_PAGE = 23;
 
-            const defaultData = {
+            // 如果 CDN 加载失败时的后备默认数据（通常不会用到）
+            const FALLBACK_DATA = {
                 pageTitle: '不规推文',
                 pageSubtitle: '耽美小说精选推荐 · 纯文字推文',
                 cards: [
@@ -459,17 +462,19 @@
                 ]
             };
 
-            let appData = JSON.parse(JSON.stringify(defaultData));
+            // ==================== 全局状态 ====================
+            let appData = { pageTitle: '', pageSubtitle: '', cards: [] };
             let isEditMode = false;
             let searchQuery = '';
             let currentPage = 1;
+            let dataLoaded = false;
 
-            // DOM元素
+            // ==================== DOM 元素 ====================
             const mainContainer = document.getElementById('mainContainer');
             const pageTitleEl = document.getElementById('pageTitle');
             const pageSubtitleEl = document.getElementById('pageSubtitle');
             const cardsListEl = document.getElementById('cardsList');
-            const cardCountEl = document.getElementById('cardCount');
+            const statsBar = document.getElementById('statsBar');
             const addCardBtn = document.getElementById('addCardBtn');
             const exportBtn = document.getElementById('exportBtn');
             const exportJsonBtn = document.getElementById('exportJsonBtn');
@@ -481,70 +486,37 @@
             const confirmPasswordBtn = document.getElementById('confirmPasswordBtn');
             const searchInput = document.getElementById('searchInput');
             const searchClear = document.getElementById('searchClear');
-            const statsBar = document.getElementById('statsBar');
             const prevPageBtn = document.getElementById('prevPageBtn');
             const nextPageBtn = document.getElementById('nextPageBtn');
             const pageInfo = document.getElementById('pageInfo');
 
-            // 加载本地存储数据
-            function loadLocalData() {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    try { return JSON.parse(raw); } catch (e) {}
-                }
-                return null;
-            }
-
-            function saveLocalData(data) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            }
-
-            const localData = loadLocalData();
-            if (localData) {
-                appData = localData;
-            }
-
+            // ==================== 工具函数 ====================
             function escape(str) {
                 const d = document.createElement('div');
                 d.textContent = str;
                 return d.innerHTML;
             }
 
-            // 获取过滤后的卡片
             function getFilteredCards() {
-                if (!searchQuery.trim()) {
-                    return appData.cards;
-                }
+                if (!searchQuery.trim()) return appData.cards;
                 const q = searchQuery.trim().toLowerCase();
                 return appData.cards.filter(card => {
-                    const fields = [
-                        card.title,
-                        card.author,
-                        card.tags,
-                        card.rating,
-                        card.review,
-                        card.note || ''
-                    ];
+                    const fields = [card.title, card.author, card.tags, card.rating, card.review, card.note || ''];
                     return fields.some(f => f.toLowerCase().includes(q));
                 });
             }
 
-            // 计算总页数
             function getTotalPages(filteredCards) {
                 return Math.max(1, Math.ceil(filteredCards.length / CARDS_PER_PAGE));
             }
 
-            // 获取当前页卡片
             function getCurrentPageCards(filteredCards) {
                 const totalPages = getTotalPages(filteredCards);
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
+                if (currentPage > totalPages) currentPage = totalPages;
                 const start = (currentPage - 1) * CARDS_PER_PAGE;
                 return filteredCards.slice(start, start + CARDS_PER_PAGE);
             }
 
-            // 更新分页按钮状态
             function updatePagination(filteredCards) {
                 const totalPages = getTotalPages(filteredCards);
                 pageInfo.textContent = `第 ${currentPage}/${totalPages} 页`;
@@ -552,30 +524,93 @@
                 nextPageBtn.disabled = currentPage >= totalPages;
             }
 
-            // 渲染页面
+            // 保存到本地存储（用于编辑模式下的临时修改）
+            function saveToLocal() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            }
+
+            function loadFromLocal() {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    try { return JSON.parse(raw); } catch (e) {}
+                }
+                return null;
+            }
+
+            // 从远程加载 data.json
+            async function loadRemoteData() {
+                try {
+                    const response = await fetch(DATA_URL);
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const data = await response.json();
+                    if (data && typeof data === 'object' && Array.isArray(data.cards)) {
+                        appData = data;
+                        dataLoaded = true;
+                        // 如果本地有更新的编辑数据（例如还没导出的），优先用本地的
+                        const local = loadFromLocal();
+                        if (local && local.cards && local.cards.length > 0) {
+                            // 简单判断：如果本地卡片数量大于等于远程，可能用户编辑过，我们以本地为准
+                            // 但这样可能不合理，所以改为：管理员编辑后如果想要生效，应该导出 JSON 上传。
+                            // 因此直接使用远程数据，忽略本地的覆盖。
+                        }
+                        render();
+                    } else {
+                        throw new Error('数据格式不正确');
+                    }
+                } catch (err) {
+                    console.warn('加载远程数据失败，使用本地缓存或默认数据', err);
+                    // 尝试本地存储
+                    const local = loadFromLocal();
+                    if (local && local.cards) {
+                        appData = local;
+                    } else {
+                        appData = JSON.parse(JSON.stringify(FALLBACK_DATA));
+                    }
+                    dataLoaded = true;
+                    render();
+                    showToast('⚠️ 无法加载最新数据，显示的是缓存版本');
+                }
+            }
+
+            // Toast
+            function showToast(msg) {
+                const toast = document.createElement('div');
+                toast.textContent = msg;
+                toast.style.position = 'fixed';
+                toast.style.bottom = '30px';
+                toast.style.left = '50%';
+                toast.style.transform = 'translateX(-50%)';
+                toast.style.background = 'var(--accent-deep)';
+                toast.style.color = '#fff';
+                toast.style.padding = '10px 24px';
+                toast.style.borderRadius = '22px';
+                toast.style.fontSize = '0.88rem';
+                toast.style.zIndex = '2000';
+                toast.style.boxShadow = '0 6px 20px rgba(155,123,132,0.4)';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+            }
+
+            // ==================== 渲染 ====================
             function render() {
-                pageTitleEl.textContent = appData.pageTitle;
-                pageSubtitleEl.textContent = appData.pageSubtitle;
+                pageTitleEl.textContent = appData.pageTitle || '不规推文';
+                pageSubtitleEl.textContent = appData.pageSubtitle || '';
                 document.title = appData.pageTitle || '不规推文';
 
                 const filteredCards = getFilteredCards();
                 const totalFiltered = filteredCards.length;
                 const totalPages = getTotalPages(filteredCards);
 
-                // 确保当前页有效
                 if (currentPage > totalPages) currentPage = totalPages;
                 if (currentPage < 1) currentPage = 1;
-
                 const pageCards = getCurrentPageCards(filteredCards);
 
-                // 统计栏
                 if (searchQuery.trim() && totalFiltered !== appData.cards.length) {
                     statsBar.innerHTML = `搜索到 <span id="cardCount">${totalFiltered}</span> 篇推文 (共 ${appData.cards.length} 篇) · 第 ${currentPage}/${totalPages} 页`;
                 } else {
                     statsBar.innerHTML = `共 <span id="cardCount">${appData.cards.length}</span> 篇推文 · 第 ${currentPage}/${totalPages} 页`;
                 }
 
-                // 渲染卡片
                 if (pageCards.length === 0) {
                     cardsListEl.innerHTML = '<div class="no-result">📭 没有找到匹配的推文</div>';
                 } else {
@@ -607,7 +642,6 @@
 
                 updatePagination(filteredCards);
 
-                // 编辑模式样式切换
                 if (isEditMode) {
                     mainContainer.classList.add('edit-mode');
                 } else {
@@ -615,16 +649,15 @@
                 }
             }
 
-            // 更新卡片字段
             function updateField(cardId, field, value) {
                 const card = appData.cards.find(c => c.id == cardId);
                 if (card) {
                     card[field] = value;
-                    saveLocalData(appData);
+                    saveToLocal();
                 }
             }
 
-            // 进入/退出编辑模式
+            // ==================== 编辑模式控制 ====================
             function enterEditMode() {
                 isEditMode = true;
                 render();
@@ -634,9 +667,10 @@
             function exitEditMode() {
                 isEditMode = false;
                 render();
+                showToast('已退出编辑模式，当前修改仅保存在本机，如需更新网站请导出 JSON 并上传');
             }
 
-            // 标题三击进入编辑模式验证
+            // 标题三击
             let titleClickTimer;
             pageTitleEl.addEventListener('click', function(e) {
                 if (isEditMode) return;
@@ -664,10 +698,9 @@
             passwordModal.addEventListener('click', function(e) {
                 if (e.target === passwordModal) passwordModal.style.display = 'none';
             });
-
             exitEditBtn.addEventListener('click', exitEditMode);
 
-            // 搜索输入监听
+            // 搜索
             searchInput.addEventListener('input', function() {
                 searchQuery = searchInput.value;
                 if (searchQuery.trim()) {
@@ -675,11 +708,9 @@
                 } else {
                     searchClear.classList.remove('visible');
                 }
-                currentPage = 1; // 搜索重置到第一页
+                currentPage = 1;
                 render();
             });
-
-            // 清除搜索
             searchClear.addEventListener('click', function() {
                 searchInput.value = '';
                 searchQuery = '';
@@ -689,7 +720,7 @@
                 searchInput.focus();
             });
 
-            // 分页按钮事件
+            // 分页
             prevPageBtn.addEventListener('click', function() {
                 if (currentPage > 1) {
                     currentPage--;
@@ -697,7 +728,6 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
-
             nextPageBtn.addEventListener('click', function() {
                 const filteredCards = getFilteredCards();
                 const totalPages = getTotalPages(filteredCards);
@@ -717,8 +747,7 @@
                     const card = appData.cards.find(c => c.id === id);
                     if (card && confirm(`确定要删除「${card.title || '未命名'}」这篇推文吗？`)) {
                         appData.cards = appData.cards.filter(c => c.id !== id);
-                        saveLocalData(appData);
-                        // 如果当前页无数据自动退到上一页
+                        saveToLocal();
                         const filteredCards = getFilteredCards();
                         const totalPages = getTotalPages(filteredCards);
                         if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
@@ -738,91 +767,88 @@
                 }
                 if (el.id === 'pageTitle') {
                     appData.pageTitle = el.textContent.trim() || '不规推文';
-                    saveLocalData(appData);
+                    saveToLocal();
                     document.title = appData.pageTitle;
                 }
                 if (el.id === 'pageSubtitle') {
-                    appData.pageSubtitle = el.textContent.trim();
-                    saveLocalData(appData);
+                    AppData.pageSubtitle=埃尔.textContent.修剪();
+                    saveToLocal();
                 }
             });
 
             // 添加卡片
-            addCardBtn.addEventListener('click', function() {
-                if (!isEditMode) return;
-                const newId = Math.max(0, ...appData.cards.map(c => c.id)) + 1;
-                appData.cards.push({ id: newId, title: '', author: '', tags: '', rating: '★★★★☆', review: '', note: '' });
-                saveLocalData(appData);
-                // 添加后跳转到最后一页
-                const filteredCards = getFilteredCards();
-                const totalPages = getTotalPages(filteredCards);
-                currentPage = totalPages;
-                render();
+            addCardBtn.addEventListener('单击', 功能() {
+                如果 (!isEditMode) 返回;
+                Const newId=数学.最大值(0, ...AppData.卡片.地图(c=>c.身份标识))+1;
+                AppData.卡片.推({ 身份标识: newId, 标题: '', 作者: '', 标签: '', 评级: '★★★★☆', 回顾: '', 笔记: '' });
+                saveToLocal();
+                Const filteredCards=getFilteredCards();
+                CurrentPage=getTotalPages(filteredCards);
+                提供();
             });
 
-            // 复制全部推文文本
-            exportBtn.addEventListener('click', function() {
-                const cardsToExport = searchQuery.trim() ? getFilteredCards() : appData.cards;
-                let text = `【${appData.pageTitle}】\n${appData.pageSubtitle}\n${'═'.repeat(30)}\n\n`;
-                cardsToExport.forEach(c => {
-                    text += `📖 ${c.title}\n作者：${c.author}\n标签：${c.tags}\n推荐：${c.rating}\n推文：${c.review}\n${c.note ? '💡 '+c.note+'\n' : ''}\n${'─'.repeat(20)}\n\n`;
+            // 复制全部文本
+            exportBtn.addEventListener('单击', 功能() {
+                Const cardsToExport=searchQuery.修剪() ? getFilteredCards() : AppData.卡片;
+                让 文本=`【${AppData.pageTitle}】\n${AppData.pageSubtitle}\n${'═'.重复(30)}\n\n`;
+                cardsToExport.foreach(c=>{
+                    文本+='📖${c.标题}\n作者：${c.作者}\n标签：${c.标签}\n推荐：${c.评级}\n推文：${c.回顾}\n${c.笔记 ? '💡 '+c.笔记+'\n' : ''}\n${'-'.重复(20)}\n\n`;
                 });
-                navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+                领航员.clipboard.WRITETEXT(文本).然后(()=>警惕的('已复制到剪贴板'));
             });
 
-            // 导出JSON备份
-            exportJsonBtn.addEventListener('click', function() {
-                const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'bugui_tuiwen_backup.json';
-                a.click();
+            // 导出 JSON
+            exportJsonBtn.addEventListener('单击', 功能() {
+                Const 斑点=新的 斑点([JSON.使字符串化(AppData, null, 2)], { 类型: '应用程序/json' });
+                Const URL=URL.createObjectURL(斑点);
+                Const 一个=文件.createElement(‘A’);
+                一个.href=URL;
+                一个.下载='data.json';  // 方便直接上传覆盖
+                一个.点击();
+                showToast('📤 数据已导出，请到GitHub仓库上传此文件覆盖data.json');
             });
 
-            // 导入JSON
-            importHint.addEventListener('click', function() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.json';
-                input.onchange = function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        try {
-                            const data = JSON.parse(ev.target.result);
-                            if (data && Array.isArray(data.cards)) {
-                                appData = data;
-                                saveLocalData(appData);
-                                currentPage = 1;
-                                render();
-                                alert('数据导入成功！');
-                            } else {
-                                alert('文件格式不正确');
+            // 导入 JSON（浏览模式也可用）
+            importHint.addEventListener('单击', 功能() {
+                Const 输入=文件.createElement('输入');
+                输入.类型='文件';
+                输入.接受='.json';
+                输入.onChange=功能(e) {
+                    Const 文件=e.目标.文件[0];
+                    如果 (!文件) 返回;
+                    Const 读者=新的 FileReader();
+                    读者.onload=功能(电动汽车) {
+                        尝试 {
+                            Const 数据=JSON.解析(电动汽车.目标.结果);
+                            如果 (数据 && 数组.isArray(数据.卡片)) {
+                                AppData=数据;
+                                saveToLocal();
+                                CurrentPage=1;
+                                提供();
+                                警惕的('数据导入成功！(仅本地生效，如需全局更新请上传 data.json 到仓库)');
+                            } 其他 {
+                                警惕的('文件格式不正确');
                             }
-                        } catch (ex) { alert('解析失败'); }
+                        } 赶上 (前) { 警惕的('解析失败'); }
                     };
-                    reader.readAsText(file);
+                    读者.readAsText(文件);
                 };
-                input.click();
+                输入.点击();
             });
 
-            // 恢复默认
-            resetBtn.addEventListener('click', function() {
-                if (confirm('恢复默认数据将覆盖当前内容，确定吗？')) {
-                    appData = JSON.parse(JSON.stringify(defaultData));
-                    saveLocalData(appData);
-                    currentPage = 1;
-                    render();
+            //恢复默认（从fallback_DATA重置，并清除本地存储）
+            resetBtn.addEventListener('单击', 功能() {
+                如果 (确认('恢复默认数据将覆盖当前内容，确定吗？ ')) {
+                    AppData=JSON.解析(JSON.使字符串化(FALLBACK_DATA));
+                    saveToLocal();
+                    CurrentPage=1;
+                    提供();
                 }
             });
 
-            // 初始化渲染
-      render();
-            isEditMode = false;
-            mainContainer.classList.remove('edit-mode');
+            //====================启动加载====================
+            loadRemoteData();
         })();
-    </script>
-</body>
-</html>
+</剧本>
+</身体>
+</超文本标记语言>
