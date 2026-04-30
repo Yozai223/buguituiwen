@@ -771,84 +771,83 @@
                     document.title = appData.pageTitle;
                 }
                 if (el.id === 'pageSubtitle') {
-                    AppData.pageSubtitle=埃尔.textContent.修剪();
+                    appData.pageSubtitle = el.textContent.trim();
                     saveToLocal();
                 }
             });
 
             // 添加卡片
-            addCardBtn.addEventListener('单击', 功能() {
-                如果 (!isEditMode) 返回;
-                Const newId=数学.最大值(0, ...AppData.卡片.地图(c=>c.身份标识))+1;
-                AppData.卡片.推({ 身份标识: newId, 标题: '', 作者: '', 标签: '', 评级: '★★★★☆', 回顾: '', 笔记: '' });
+            addCardBtn.addEventListener('click', function() {
+                if (!isEditMode) return;
+                const newId = Math.max(0, ...appData.cards.map(c => c.id)) + 1;
+                appData.cards.push({ id: newId, title: '', author: '', tags: '', rating: '★★★★☆', review: '', note: '' });
                 saveToLocal();
-                Const filteredCards=getFilteredCards();
-                CurrentPage=getTotalPages(filteredCards);
-                提供();
+                const filteredCards = getFilteredCards();
+                currentPage = getTotalPages(filteredCards);
+                render();
             });
 
             // 复制全部文本
-            exportBtn.addEventListener('单击', 功能() {
-                Const cardsToExport=searchQuery.修剪() ? getFilteredCards() : AppData.卡片;
-                让 文本=`【${AppData.pageTitle}】\n${AppData.pageSubtitle}\n${'═'.重复(30)}\n\n`;
-                cardsToExport.foreach(c=>{
-                    文本+='📖${c.标题}\n作者：${c.作者}\n标签：${c.标签}\n推荐：${c.评级}\n推文：${c.回顾}\n${c.笔记 ? '💡 '+c.笔记+'\n' : ''}\n${'-'.重复(20)}\n\n`;
-                });
-                领航员.clipboard.WRITETEXT(文本).然后(()=>警惕的('已复制到剪贴板'));
+            exportBtn.addEventListener('click', function() {
+                const cardsToExport = searchQuery.trim() ? getFilteredCards() : appData.cards;
+                let text = `【${appData.pageTitle}】\n${appData.pageSubtitle}\n${'═'.repeat(30)}\n\n`;
+                cardsToExport.forEach(c => {
+                    text += `📖 ${c.title}\n作者：${c.author}\n标签：${c.tags}\n推荐：${c.rating}\n推文：${c.review}\n${c.note ? '💡 '+c.});
+                navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
             });
 
             // 导出 JSON
-            exportJsonBtn.addEventListener('单击', 功能() {
-                Const 斑点=新的 斑点([JSON.使字符串化(AppData, null, 2)], { 类型: '应用程序/json' });
-                Const URL=URL.createObjectURL(斑点);
-                Const 一个=文件.createElement(‘A’);
-                一个.href=URL;
-                一个.下载='data.json';  // 方便直接上传覆盖
-                一个.点击();
-                showToast('📤 数据已导出，请到GitHub仓库上传此文件覆盖data.json');
+            exportJsonBtn.addEventListener('click', function() {
+                const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.json';  // 方便直接上传覆盖
+                a.click();
+                showToast('📤 数据已导出，请到 GitHub 仓库上传此文件覆盖 data.json');
             });
 
             // 导入 JSON（浏览模式也可用）
-            importHint.addEventListener('单击', 功能() {
-                Const 输入=文件.createElement('输入');
-                输入.类型='文件';
-                输入.接受='.json';
-                输入.onChange=功能(e) {
-                    Const 文件=e.目标.文件[0];
-                    如果 (!文件) 返回;
-                    Const 读者=新的 FileReader();
-                    读者.onload=功能(电动汽车) {
-                        尝试 {
-                            Const 数据=JSON.解析(电动汽车.目标.结果);
-                            如果 (数据 && 数组.isArray(数据.卡片)) {
-                                AppData=数据;
+            importHint.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            if (data && Array.isArray(data.cards)) {
+                                appData = data;
                                 saveToLocal();
-                                CurrentPage=1;
-                                提供();
-                                警惕的('数据导入成功！(仅本地生效，如需全局更新请上传 data.json 到仓库)');
-                            } 其他 {
-                                警惕的('文件格式不正确');
+                                currentPage = 1;
+                                render();
+                                alert('数据导入成功！(仅本地生效，如需全局更新请上传 data.json 到仓库)');
+                            } else {
+                                alert('文件格式不正确');
                             }
-                        } 赶上 (前) { 警惕的('解析失败'); }
+                        } catch (ex) { alert('解析失败'); }
                     };
-                    读者.readAsText(文件);
+                    reader.readAsText(file);
                 };
-                输入.点击();
+                input.click();
             });
 
-            //恢复默认（从fallback_DATA重置，并清除本地存储）
-            resetBtn.addEventListener('单击', 功能() {
-                如果 (确认('恢复默认数据将覆盖当前内容，确定吗？ ')) {
-                    AppData=JSON.解析(JSON.使字符串化(FALLBACK_DATA));
+            // 恢复默认（从 FALLBACK_DATA 重置，并清除本地存储）
+            resetBtn.addEventListener('click', function() {
+                if (confirm('恢复默认数据将覆盖当前内容，确定吗？')) {
+                    appData = JSON.parse(JSON.stringify(FALLBACK_DATA));
                     saveToLocal();
-                    CurrentPage=1;
-                    提供();
+                    currentPage = 1;
+                    render();
                 }
             });
 
-            //====================启动加载====================
+            // ==================== 启动加载 ====================
             loadRemoteData();
         })();
-</剧本>
-</身体>
-</超文本标记语言>
+    </script>
+</body>
+</html>
