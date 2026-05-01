@@ -20,11 +20,7 @@
             --transition: 0.25s;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
@@ -38,360 +34,115 @@
             padding: 20px 16px 60px;
         }
 
-        .main-container {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            padding: 36px 20px 10px;
-            position: relative;
-        }
+        .main-container { max-width: 720px; margin: 0 auto; }
+
+        .header { text-align: center; padding: 36px 20px 10px; position: relative; }
         .header::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 3px;
+            content: ''; display: block; width: 60px; height: 3px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            margin: 18px auto 0;
-            border-radius: 2px;
+            margin: 18px auto 0; border-radius: 2px;
         }
         .page-title {
-            font-family: 'Noto Serif SC', 'STSong', serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent-deep);
-            letter-spacing: 0.06em;
-            outline: none;
-            border-radius: 6px;
-            padding: 4px 12px;
-            display: inline-block;
-            user-select: none;
+            font-family: 'Noto Serif SC', 'STSong', serif; font-size: 2rem; font-weight: 700;
+            color: var(--accent-deep); letter-spacing: 0.06em; outline: none;
+            border-radius: 6px; padding: 4px 12px; display: inline-block; user-select: none;
         }
-        .page-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-light);
-            margin-top: 6px;
-            outline: none;
-        }
-        .stats-bar {
-            text-align: center;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            letter-spacing: 0.02em;
-        }
-        .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-        .search-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-        }
+        .page-subtitle { font-size: 0.95rem; color: var(--text-light); margin-top: 6px; outline: none; }
+
+        .stats-bar { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.02em; }
+
+        .search-container { display: flex; justify-content: center; margin-bottom: 18px; }
+        .search-wrapper { position: relative; width: 100%; max-width: 400px; }
         .search-input {
-            width: 100%;
-            padding: 10px 40px 10px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 24px;
-            background: var(--card-bg);
-            font-size: 0.9rem;
-            outline: none;
-            color: var(--text);
-            transition: border-color var(--transition), box-shadow var(--transition);
-            font-family: inherit;
+            width: 100%; padding: 10px 40px 10px 16px; border: 1.5px solid var(--border);
+            border-radius: 24px; background: var(--card-bg); font-size: 0.9rem; outline: none;
+            color: var(--text); transition: border-color var(--transition), box-shadow var(--transition); font-family: inherit;
         }
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(200, 165, 174, 0.15);
-        }
-        .search-input::placeholder {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200, 165, 174, 0.15); }
+        .search-input::placeholder { color: var(--text-muted); font-size: 0.85rem; }
         .search-clear {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: none;
-            line-height: 1;
-            padding: 4px;
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--text-muted); cursor: pointer;
+            font-size: 1.1rem; display: none; line-height: 1; padding: 4px;
         }
-        .search-clear.visible {
-            display: block;
-        }
-        .search-clear:hover {
-            color: var(--accent-deep);
-        }
+        .search-clear.visible { display: block; }
+        .search-clear:hover { color: var(--accent-deep); }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            margin-top: 22px;
-            flex-wrap: wrap;
-        }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 22px; flex-wrap: wrap; }
         .pagination-btn {
-            padding: 6px 16px;
-            border-radius: 18px;
-            border: 1.5px solid var(--border);
-            background: var(--card-bg);
-            color: var(--text-light);
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all var(--transition);
-            font-family: inherit;
-            user-select: none;
+            padding: 6px 16px; border-radius: 18px; border: 1.5px solid var(--border);
+            background: var(--card-bg); color: var(--text-light); cursor: pointer;
+            font-size: 0.85rem; transition: all var(--transition); font-family: inherit; user-select: none;
         }
-        .pagination-btn:hover:not(:disabled) {
-            border-color: var(--accent);
-            color: var(--accent-deep);
-            background: #fefbfc;
-        }
-        .pagination-btn:disabled {
-            opacity: 0.4;
-            cursor: default;
-            background: #f9f5f6;
-        }
-        .pagination-info {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-        }
+        .pagination-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-deep); background: #fefbfc; }
+        .pagination-btn:disabled { opacity: 0.4; cursor: default; background: #f9f5f6; }
+        .pagination-info { font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.03em; }
 
-        .cards-list {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
+        .cards-list { display: flex; flex-direction: column; gap: 18px; }
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 22px 24px 20px;
+            background: var(--card-bg); border-radius: var(--radius); padding: 22px 24px 20px;
             box-shadow: 0 2px 12px var(--card-shadow), 0 0 0 1px rgba(220, 195, 200, 0.25);
-            position: relative;
-            transition: box-shadow var(--transition), transform var(--transition);
+            position: relative; transition: box-shadow var(--transition), transform var(--transition);
         }
         .card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 18px;
-            bottom: 18px;
-            width: 4px;
-            background: linear-gradient(180deg, var(--accent), var(--accent-light));
-            border-radius: 0 3px 3px 0;
-            opacity: 0.7;
+            content: ''; position: absolute; left: 0; top: 18px; bottom: 18px; width: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-light)); border-radius: 0 3px 3px 0; opacity: 0.7;
         }
-        .card-title-row {
-            display: flex;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 6px;
-            padding-right: 34px;
-        }
-        .card-book-title {
-            font-family: 'Noto Serif SC', 'STSong', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent-deep);
-        }
-        .card-author {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-        .card-tags-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-        .card-tags-editable {
-            background: #f2e6e9;
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-size: 0.82rem;
-            color: var(--accent-deep);
-        }
-        .card-rating-row {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .card-rating-editable {
-            font-size: 0.95rem;
-            color: #c8945a;
-        }
-        .card-divider {
-            border: none;
-            height: 1px;
-            background: linear-gradient(90deg, var(--border), transparent 70%);
-            margin: 12px 0;
-        }
-        .card-review {
-            font-size: 0.93rem;
-            line-height: 1.8;
-        }
-        .card-note-row {
-            margin-top: 10px;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            font-size: 0.84rem;
-        }
-        .card-note-icon {
-            color: var(--accent);
-        }
+        .card-title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; padding-right: 34px; }
+        .card-book-title { font-family: 'Noto Serif SC', 'STSong', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent-deep); }
+        .card-author { font-size: 0.9rem; color: var(--text-light); }
+        .card-tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; align-items: center; }
+        .card-tags-editable { background: #f2e6e9; border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; color: var(--accent-deep); }
+        .card-rating-row { margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .card-rating-editable { font-size: 0.95rem; color: #c8945a; }
+        .card-divider { border: none; height: 1px; background: linear-gradient(90deg, var(--border), transparent 70%); margin: 12px 0; }
+        .card-review { font-size: 0.93rem; line-height: 1.8; }
+        .card-note-row { margin-top: 10px; display: flex; align-items: flex-start; gap: 6px; font-size: 0.84rem; }
+        .card-note-icon { color: var(--accent); }
 
-        .edit-mode .page-title {
-            cursor: pointer;
-            background: rgba(200, 165, 174, 0.03);
-        }
-        .edit-mode .page-title:hover {
-            background: rgba(200, 165, 174, 0.08);
-        }
-        .edit-mode [contenteditable="true"] {
-            border-radius: 4px;
-            padding: 2px 6px;
-            transition: background var(--transition);
-            cursor: text;
-            outline: none;
-        }
-        .edit-mode [contenteditable="true"]:hover {
-            background: rgba(200, 165, 174, 0.06);
-        }
-        .edit-mode [contenteditable="true"]:focus {
-            background: rgba(200, 165, 174, 0.12);
-        }
-        .card-delete-btn,
-        .add-card-btn,
-        .footer-tools {
-            display: none;
-        }
-        .edit-mode .card-delete-btn,
-        .edit-mode .add-card-btn,
-        .edit-mode .footer-tools {
-            display: flex;
-        }
+        .edit-mode .page-title { cursor: pointer; background: rgba(200, 165, 174, 0.03); }
+        .edit-mode .page-title:hover { background: rgba(200, 165, 174, 0.08); }
+        .edit-mode [contenteditable="true"] { border-radius: 4px; padding: 2px 6px; transition: background var(--transition); cursor: text; outline: none; }
+        .edit-mode [contenteditable="true"]:hover { background: rgba(200, 165, 174, 0.06); }
+        .edit-mode [contenteditable="true"]:focus { background: rgba(200, 165, 174, 0.12); }
+        .card-delete-btn, .add-card-btn, .footer-tools { display: none; }
+        .edit-mode .card-delete-btn, .edit-mode .add-card-btn, .edit-mode .footer-tools { display: flex; }
         .card-delete-btn {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 1.5px solid transparent;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 14px; right: 16px; width: 30px; height: 30px; border-radius: 50%;
+            border: 1.5px solid transparent; background: transparent; color: var(--text-muted);
+            font-size: 1.1rem; cursor: pointer; align-items: center; justify-content: center;
         }
-        .card-delete-btn:hover {
-            background: #fef5f6;
-            border-color: #f0d0d4;
-            color: #d4848f;
-        }
+        .card-delete-btn:hover { background: #fef5f6; border-color: #f0d0d4; color: #d4848f; }
         .add-card-btn {
-            width: 100%;
-            padding: 18px 20px;
-            background: var(--card-bg);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            color: var(--accent);
-            font-size: 1rem;
-            margin-top: 18px;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; padding: 18px 20px; background: var(--card-bg); border: 2px dashed var(--border);
+            border-radius: var(--radius); cursor: pointer; color: var(--accent); font-size: 1rem; margin-top: 18px;
+            justify-content: center; gap: 8px;
         }
-        .footer-tools {
-            justify-content: center;
-            gap: 16px;
-            margin-top: 28px;
-            flex-wrap: wrap;
-        }
+        .footer-tools { justify-content: center; gap: 16px; margin-top: 28px; flex-wrap: wrap; }
         .footer-btn {
-            padding: 9px 20px;
-            border-radius: 22px;
-            border: 1.5px solid var(--border);
-            background: var(--card-bg);
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-light);
+            padding: 9px 20px; border-radius: 22px; border: 1.5px solid var(--border);
+            background: var(--card-bg); cursor: pointer; font-size: 0.85rem; color: var(--text-light);
         }
 
-        .import-hint {
-            text-align: center;
-            margin-top: 24px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-        .import-hint:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
+        .import-hint { text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; opacity: 0.7; }
+        .import-hint:hover { opacity: 1; text-decoration: underline; }
 
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-box {
-            background: white;
-            padding: 28px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 280px;
+            background: white; padding: 28px; border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; width: 280px;
         }
         .modal-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 16px 0;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
-            text-align: center;
+            width: 100%; padding: 10px; margin: 16px 0; border: 1px solid var(--border);
+            border-radius: 10px; font-size: 1rem; text-align: center;
         }
-        .modal-box button {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 22px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
+        .modal-box button { background: var(--accent); color: white; border: none; padding: 8px 22px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; }
 
-        .no-result {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
+        .no-result { text-align: center; padding: 40px; color: var(--text-muted); font-size: 1rem; }
+        .loading-text { text-align: center; padding: 40px; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -408,9 +159,8 @@
             </div>
         </div>
 
-        <div class="stats-bar" id="statsBar">共 <span id="cardCount">0</span> 篇推文</div>
-
-        <div class="cards-list" id="cardsList"></div>
+        <div class="stats-bar" id="statsBar">正在加载...</div>
+        <div class="cards-list" id="cardsList"><div class="loading-text">📖 加载推文数据中...</div></div>
 
         <div class="pagination" id="pagination">
             <button class="pagination-btn" id="prevPageBtn" disabled>← 上一页</button>
@@ -438,8 +188,14 @@
 
     <script>
         (function() {
-            // 所有数据直接写在这里，不用外部文件
-            const DEFAULT_DATA = {
+            // ==================== 配置 ====================
+            const DATA_URL = 'data.json';  // 仓库中的 JSON 文件
+            const STORAGE_KEY = 'lotus_ouhe_fetch_v1';
+            const DEFAULT_PASSWORD = 'ouhe2026';
+            const CARDS_PER_PAGE = 23;
+
+            // 后备默认数据（当远程加载失败时使用）
+            const FALLBACK_DATA = {
                 pageTitle: '不规推文',
                 pageSubtitle: '耽美小说精选推荐 · 纯文字推文',
                 cards: [
@@ -448,15 +204,12 @@
                 ]
             };
 
-            const STORAGE_KEY = 'lotus_ouhe_edit_mode_standalone';
-            const DEFAULT_PASSWORD = 'ouhe2026';
-            const CARDS_PER_PAGE = 23;
-
-            let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            let appData = { pageTitle: '', pageSubtitle: '', cards: [] };
             let isEditMode = false;
             let searchQuery = '';
             let currentPage = 1;
 
+            // DOM 元素
             const mainContainer = document.getElementById('mainContainer');
             const pageTitleEl = document.getElementById('pageTitle');
             const pageSubtitleEl = document.getElementById('pageSubtitle');
@@ -477,29 +230,11 @@
             const nextPageBtn = document.getElementById('nextPageBtn');
             const pageInfo = document.getElementById('pageInfo');
 
+            // 工具函数
             function escape(str) {
                 const d = document.createElement('div');
                 d.textContent = str;
                 return d.innerHTML;
-            }
-
-            function loadLocalData() {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    try {
-                        const data = JSON.parse(raw);
-                        if (data && Array.isArray(data.cards)) {
-                            appData = data;
-                            return;
-                        }
-                    } catch (e) {}
-                }
-                // 如果本地没有，尝试用默认数据
-                appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-            }
-
-            function saveToLocal() {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
             }
 
             function getFilteredCards() {
@@ -527,6 +262,35 @@
                 pageInfo.textContent = `第 ${currentPage}/${totalPages} 页`;
                 prevPageBtn.disabled = currentPage <= 1;
                 nextPageBtn.disabled = currentPage >= totalPages;
+            }
+
+            function saveToLocal() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            }
+
+            // 加载远程数据（带防缓存参数）
+            async function loadRemoteData() {
+                try {
+                    // 添加随机时间戳，强制浏览器每次都从服务器获取最新内容
+                    const response = await fetch(DATA_URL + '?t=' + new Date().getTime());
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const data = await response.json();
+                    if (data && typeof data === 'object' && Array.isArray(data.cards)) {
+                        appData = data;
+                    } else {
+                        throw new Error('数据格式不正确');
+                    }
+                } catch (err) {
+                    console.warn('远程数据加载失败，使用本地缓存或默认数据', err);
+                    const local = localStorage.getItem(STORAGE_KEY);
+                    if (local) {
+                        try { appData = JSON.parse(local); } catch(e) {}
+                    }
+                    if (!appData.cards || appData.cards.length === 0) {
+                        appData = JSON.parse(JSON.stringify(FALLBACK_DATA));
+                    }
+                }
+                render();
             }
 
             function render() {
@@ -594,12 +358,12 @@
                 }
             }
 
+            // 编辑模式
             function enterEditMode() {
                 isEditMode = true;
                 render();
                 passwordModal.style.display = 'none';
             }
-
             function exitEditMode() {
                 isEditMode = false;
                 render();
@@ -634,13 +398,10 @@
             });
             exitEditBtn.addEventListener('click', exitEditMode);
 
+            // 搜索
             searchInput.addEventListener('input', function() {
                 searchQuery = searchInput.value;
-                if (searchQuery.trim()) {
-                    searchClear.classList.add('visible');
-                } else {
-                    searchClear.classList.remove('visible');
-                }
+                searchClear.classList.toggle('visible', !!searchQuery.trim());
                 currentPage = 1;
                 render();
             });
@@ -653,6 +414,7 @@
                 searchInput.focus();
             });
 
+            // 分页
             prevPageBtn.addEventListener('click', function() {
                 if (currentPage > 1) {
                     currentPage--;
@@ -670,13 +432,14 @@
                 }
             });
 
+            // 删除卡片
             document.addEventListener('click', function(e) {
                 if (!isEditMode) return;
                 const delBtn = e.target.closest('[data-action="delete"]');
                 if (delBtn) {
                     const id = parseInt(delBtn.getAttribute('data-id'));
                     const card = appData.cards.find(c => c.id === id);
-                    if (card && confirm(`确定要删除「${card.title || '未命名'}」这篇推文吗？`)) {
+                    if (card && confirm('确定要删除「' + (card.title || '未命名') + '」这篇推文吗？')) {
                         appData.cards = appData.cards.filter(c => c.id !== id);
                         saveToLocal();
                         const filteredCards = getFilteredCards();
@@ -687,6 +450,7 @@
                 }
             });
 
+            // 编辑保存
             document.addEventListener('focusout', function(e) {
                 if (!isEditMode) return;
                 const el = e.target;
@@ -706,6 +470,7 @@
                 }
             });
 
+            // 添加卡片
             addCardBtn.addEventListener('click', function() {
                 if (!isEditMode) return;
                 const newId = Math.max(0, ...appData.cards.map(c => c.id)) + 1;
@@ -716,6 +481,7 @@
                 render();
             });
 
+            // 导出文本
             exportBtn.addEventListener('click', function() {
                 const cardsToExport = searchQuery.trim() ? getFilteredCards() : appData.cards;
                 let text = `【${appData.pageTitle}】\n${appData.pageSubtitle}\n${'═'.repeat(30)}\n\n`;
@@ -725,6 +491,7 @@
                 navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
             });
 
+            // 导出 JSON
             exportJsonBtn.addEventListener('click', function() {
                 const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -734,6 +501,7 @@
                 a.click();
             });
 
+            // 导入 JSON
             importHint.addEventListener('click', function() {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -761,18 +529,18 @@
                 input.click();
             });
 
+            // 恢复默认
             resetBtn.addEventListener('click', function() {
                 if (confirm('恢复默认数据将覆盖当前内容，确定吗？')) {
-                    appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                    appData = JSON.parse(JSON.stringify(FALLBACK_DATA));
                     saveToLocal();
                     currentPage = 1;
                     render();
                 }
             });
 
-            // 初始化
-            loadLocalData();
-            render();
+            // 启动：从 data.json 加载最新数据
+            loadRemoteData();
         })();
     </script>
 </body>
